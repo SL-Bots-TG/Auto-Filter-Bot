@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from info import DATABASE_NAME, DATABASE_URL, IMDB_TEMPLATE, WELCOME_TEXT, AUTH_CHANNEL, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE
+from info import DATABASE_NAME, DATABASE_URL, IMDB_TEMPLATE, WELCOME_TEXT, AUTH_CHANNEL, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE, STREAM_TORF
 
 client = AsyncIOMotorClient(DATABASE_URL)
 mydb = client[DATABASE_NAME]
@@ -33,6 +33,7 @@ class Database:
     def __init__(self):
         self.col = mydb.Users
         self.grp = mydb.Groups
+        self.me = mydb.Me
 
 
     def new_user(self, id, name):
@@ -171,6 +172,22 @@ class Database:
 
     async def get_db_size(self):
         return (await mydb.command("dbstats"))['dataSize']
+
+
+    async def get_stream_info(self, botid):
+        user = await self.me.find_one({'id':int(botidid)})
+        if user:
+            return user.get('stream_torf', True)
+        else:
+            return STREAM_TORF
+
+
+    async def update_stream_info(self, botid, value):
+        user = await self.me.find_one({'id':int(botid)})
+        if user:
+            await self.me.update_one({'id': int(botid)}, {'$set': {'stream_torf': value}})
+        else:
+            await self.me.insert_one({'id': int(botid)}, {'$set': {'stream_torf': value}})
         
 
 db = Database()
